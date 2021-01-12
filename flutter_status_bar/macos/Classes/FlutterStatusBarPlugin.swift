@@ -3,7 +3,7 @@ import FlutterMacOS
 
 public class FlutterStatusBarPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_status_bar", binaryMessenger: registrar.messenger)
+    let channel = FlutterMethodChannel(name: "plugins.coolsnow/flutter_status_bar", binaryMessenger: registrar.messenger)
     let instance = FlutterStatusBarPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
