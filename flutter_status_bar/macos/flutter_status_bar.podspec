@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.version          = '0.0.1'
   s.summary          = 'Status bar for flutter desktop.'
   s.description      = <<-DESC
- Status bar for flutter desktop.
+  Status bar for flutter desktop.
                        DESC
   s.homepage         = 'https://github.com/RealCoolSnow/flutter_status_bar_plugin'
   s.license          = { :file => '../LICENSE' }

@@ -1,0 +1,22 @@
+PODS:
+  - flutter_status_bar (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+
+DEPENDENCIES:
+  - flutter_status_bar (from `Flutter/ephemeral/.symlinks/plugins/flutter_status_bar/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+
+EXTERNAL SOURCES:
+  flutter_status_bar:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_status_bar/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+
+SPEC CHECKSUMS:
+  flutter_status_bar: 6f1dbe1f0138d9ce3825c2f2f9a922c053d2a4fd
+  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+
+PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+
+COCOAPODS: 1.10.0
