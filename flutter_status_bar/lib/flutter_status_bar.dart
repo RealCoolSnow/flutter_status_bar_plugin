@@ -8,11 +8,14 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class FlutterStatusBar {
-  static const MethodChannel _channel =
-      const MethodChannel('plugins.coolsnow/flutter_status_bar');
+  static const MethodChannel _methodChannel =
+      const MethodChannel('plugins.coolsnow/flutter_status_bar_method_channel');
+  static const EventChannel _eventChannel =
+      const EventChannel('plugins.coolsnow/flutter_status_bar_event_channel');
 
   static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
+    final String version =
+        await _methodChannel.invokeMethod('getPlatformVersion');
     return version;
   }
 }
