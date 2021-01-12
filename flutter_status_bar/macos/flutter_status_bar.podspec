@@ -5,13 +5,13 @@
 Pod::Spec.new do |s|
   s.name             = 'flutter_status_bar'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'Status bar for flutter desktop.'
   s.description      = <<-DESC
-A new flutter plugin project.
+ Status bar for flutter desktop.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/RealCoolSnow/flutter_status_bar_plugin'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'CoolSnow' => 'coolsnow2020@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'

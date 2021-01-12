@@ -1,8 +1,8 @@
 name: flutter_status_bar
-description: A new flutter plugin project.
+description: Status bar for flutter desktop.
 version: 0.0.1
-author:
-homepage:
+author: CoolSnow <coolsnow2020@gmail.com>
+homepage: https://github.com/RealCoolSnow/flutter_status_bar_plugin
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -32,8 +32,8 @@ flutter:
     # then add platforms following the instruction here:
     # https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms
     # -------------------
-      some_platform:
-        pluginClass: somePluginClass
+      macos:
+        pluginClass: FlutterStatusBarPlugin
     # -------------------
 
   # To add assets to your plugin package, add an assets section, like this:
