@@ -1,0 +1,1 @@
+# flutter_status_bar_plugin
