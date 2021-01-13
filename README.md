@@ -1,1 +1,1 @@
-# flutter_status_bar_plugin
+Status bar plugin for Flutter Desktop.
