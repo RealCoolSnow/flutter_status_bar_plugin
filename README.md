@@ -1,4 +1,4 @@
-Status bar plugin for Flutter Desktop.
+Status bar plugin for Flutter Desktop(macos).
 # Usage
 In pubspec.yaml dependencies:
 ```
