@@ -13,9 +13,24 @@ class FlutterStatusBar {
   static const EventChannel _eventChannel =
       const EventChannel('plugins.coolsnow/flutter_status_bar_event_channel');
 
-  static Future<String> get platformVersion async {
-    final String version =
-        await _methodChannel.invokeMethod('getPlatformVersion');
-    return version;
+  static Future<bool> showStatusBar() async {
+    final bool result = await _methodChannel.invokeMethod('showStatusBar');
+    return result;
+  }
+
+  static Future<bool> hideStatusBar() async {
+    final bool result = await _methodChannel.invokeMethod('hideStatusBar');
+    return result;
+  }
+
+  static Future<bool> setStatusBarText(String text) async {
+    final bool result =
+        await _methodChannel.invokeMethod('setStatusBarText', text);
+    return result;
+  }
+
+  static Future<bool> isShown() async {
+    final bool result = await _methodChannel.invokeMethod('isShown');
+    return result;
   }
 }
