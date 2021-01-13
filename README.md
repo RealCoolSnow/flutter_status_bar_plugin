@@ -1,4 +1,6 @@
-Status bar plugin for Flutter Desktop(macos).
+Status bar plugin for Flutter Desktop.
+# Support
+MacOS
 # Usage
 In pubspec.yaml dependencies:
 ```
@@ -7,6 +9,7 @@ In pubspec.yaml dependencies:
       url: https://github.com/RealCoolSnow/flutter_status_bar_plugin.git
       path: flutter_status_bar
 ```
+
 # API
 1. show status bar
 ```
