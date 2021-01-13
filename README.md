@@ -10,7 +10,7 @@ In pubspec.yaml dependencies:
 # API
 1. show status bar
 ```
-FlutterStatusBar.showStatusBar();
+FlutterStatusBar.showStatusBar('test');
 ```
 2. hide status bar
 ```

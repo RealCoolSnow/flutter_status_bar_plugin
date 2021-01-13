@@ -13,8 +13,9 @@ class FlutterStatusBar {
   static const EventChannel _eventChannel =
       const EventChannel('plugins.coolsnow/flutter_status_bar_event_channel');
 
-  static Future<bool> showStatusBar() async {
-    final bool result = await _methodChannel.invokeMethod('showStatusBar');
+  static Future<bool> showStatusBar(String text) async {
+    final bool result =
+        await _methodChannel.invokeMethod('showStatusBar', text);
     return result;
   }
 

@@ -32,7 +32,8 @@ public class FlutterStatusBarPlugin: NSObject, FlutterPlugin, FlutterStreamHandl
   private func showStatusBar(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
     if let button = self.statusBarItem.button {
-        statusBarItem.button?.title = "～"
+        let text = call.arguments as! String
+        statusBarItem.button?.title = text
         button.action = #selector(showAppWindows(_:))
     }
     result(true)
