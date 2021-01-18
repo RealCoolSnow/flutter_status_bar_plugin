@@ -34,6 +34,7 @@ public class FlutterStatusBarPlugin: NSObject, FlutterPlugin, FlutterStreamHandl
     if let button = self.statusBarItem.button {
         let text = call.arguments as! String
         statusBarItem.button?.title = text
+        button.target = self
         button.action = #selector(showAppWindows(_:))
     }
     result(true)
@@ -58,7 +59,10 @@ public class FlutterStatusBarPlugin: NSObject, FlutterPlugin, FlutterStreamHandl
   }
 
   @objc func showAppWindows(_ sender: AnyObject?) {
-    
+    // 激活应用到前台（如果应用窗口处于非活动状态）
+    NSRunningApplication.current.activate(options: [NSApplication.ActivationOptions.activateIgnoringOtherApps])
+    let window = NSApp.windows[0]
+    window.orderFront(self)
   }
 
   public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
