@@ -14,6 +14,9 @@
 #include <memory>
 #include <sstream>
 
+#define W 100
+#define H 20
+
 namespace
 {
 
@@ -27,6 +30,7 @@ namespace
     virtual ~FlutterStatusBarPlugin();
 
   private:
+    HWND m_hWnd = NULL;
     // Called when a method is called on this plugin's channel from Dart.
     void HandleMethodCall(
         const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -109,19 +113,88 @@ namespace
   }
 } // namespace
 
+LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
+{
+  switch (message)
+  {
+  case WM_CREATE:
+  {
+    //CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 0, 30, 73, 20, window, NULL, NULL, NULL);
+    break;
+  }
+  case WM_PAINT:
+  {
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(window, &ps);
+    TextOut(hdc, 0, 0, L"abc", 3);
+    EndPaint(window, &ps);
+    break;
+  }
+  case WM_NCHITTEST:
+  {
+    LRESULT hit = DefWindowProc(window, message, wparam, lparam);
+    if (hit == HTCLIENT)
+    {
+      hit = HTCAPTION;
+    }
+    return hit;
+  }
+  case WM_CLOSE:
+    PostQuitMessage(0);
+    break;
+  default:
+    return DefWindowProcA(window, message, wparam, lparam);
+  }
+  return 0;
+}
 bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::EncodableValue> &method_call)
 {
+  if (m_hWnd == NULL)
+  {
+    WNDCLASSA windowClass = {0};
+    windowClass.lpszClassName = "flutter_status_bar_wnd";
+    windowClass.lpfnWndProc = WindowProc;
+    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    windowClass.style = CS_HREDRAW | CS_VREDRAW;
+
+    RegisterClassA(&windowClass);
+
+    RECT R = {0, 0, W, H};
+    int width = R.right - R.left;
+    int height = R.bottom - R.top;
+    // HMODULE hInstance = GetModuleHandle(NULL);
+    m_hWnd = CreateWindowExW(
+        WS_EX_TOPMOST,
+        L"flutter_status_bar_wnd",
+        L"flutter_status_bar_wnd",
+        WS_POPUPWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        width, height,
+        0, 0,
+        NULL, windowClass.hInstance);
+
+    LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
+    lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+    SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
+  }
+  ShowWindow(m_hWnd, SW_SHOW);
+  UpdateWindow(m_hWnd);
   return true;
 }
 
 bool FlutterStatusBarPlugin::HideStatusBar()
 {
+  if (m_hWnd != NULL)
+  {
+    DestroyWindow(m_hWnd);
+    m_hWnd = NULL;
+  }
   return true;
 }
 
 bool FlutterStatusBarPlugin::IsShown()
 {
-  return true;
+  return m_hWnd != NULL;
 }
 
 bool FlutterStatusBarPlugin::SetStatusBarText(const flutter::MethodCall<flutter::EncodableValue> &method_call)
