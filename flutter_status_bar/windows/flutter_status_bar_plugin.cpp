@@ -13,9 +13,14 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#define _CRT_SECURE_NO_WARNINGS
+
+#define GWL_HWNDPARENT (-8)
 
 #define W 100
 #define H 20
+
+std::wstring m_text = L"...";
 
 namespace
 {
@@ -126,7 +131,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
   {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(window, &ps);
-    TextOut(hdc, 0, 0, L"abc", 3);
+    TextOut(hdc, 0, 0, m_text.c_str(),static_cast<int>(m_text.size()));
     EndPaint(window, &ps);
     break;
   }
@@ -147,14 +152,28 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
   }
   return 0;
 }
+// static bool IsString(const flutter::EncodableValue *Value)
+// {
+//   if (std::holds_alternative<std::string>(*Value) == true)
+//     return true;
+//   return false;
+// }
+
 bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::EncodableValue> &method_call)
 {
+  // const auto *plist = std::get_if<flutter::EncodableList>(method_call.arguments());
+  // if (IsString(&(*plist)[0]))
+  // {
+  //   // EncodableValue *value = fromString(toString(&(*plist)[0]).AnsiCharPtr);
+  //   // ResultValue.push_back(*value);
+  //   // delete value;
+  // }
   if (m_hWnd == NULL)
   {
     WNDCLASSA windowClass = {0};
     windowClass.lpszClassName = "flutter_status_bar_wnd";
     windowClass.lpfnWndProc = WindowProc;
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    windowClass.hbrBackground = 0;
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
 
     RegisterClassA(&windowClass);
@@ -164,7 +183,7 @@ bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::En
     int height = R.bottom - R.top;
     // HMODULE hInstance = GetModuleHandle(NULL);
     m_hWnd = CreateWindowExW(
-        WS_EX_TOPMOST,
+        WS_EX_TOPMOST | WS_EX_TRANSPARENT,
         L"flutter_status_bar_wnd",
         L"flutter_status_bar_wnd",
         WS_POPUPWINDOW,
@@ -173,9 +192,8 @@ bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::En
         0, 0,
         NULL, windowClass.hInstance);
 
-    LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
-    lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-    SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
+    SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) & ~WS_EX_APPWINDOW | WS_EX_TOOLWINDOW);
+    //SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
   }
   ShowWindow(m_hWnd, SW_SHOW);
   UpdateWindow(m_hWnd);
