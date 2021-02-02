@@ -17,13 +17,16 @@
 
 #define GWL_HWNDPARENT (-8)
 
-#define W 100
-#define H 20
+#define WIN_WIDTH 180
+#define WIN_HEIGHT 24
+#define WIN_BOTTOM 100
 
 std::wstring m_text = L"...";
 
 namespace
 {
+  using std::string;
+  using std::wstring;
 
   class FlutterStatusBarPlugin : public flutter::Plugin
   {
@@ -131,7 +134,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
   {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(window, &ps);
-    TextOut(hdc, 0, 0, m_text.c_str(),static_cast<int>(m_text.size()));
+    TextOut(hdc, 0, 0, m_text.c_str(), static_cast<int>(m_text.size()));
     EndPaint(window, &ps);
     break;
   }
@@ -152,22 +155,49 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
   }
   return 0;
 }
-// static bool IsString(const flutter::EncodableValue *Value)
-// {
-//   if (std::holds_alternative<std::string>(*Value) == true)
-//     return true;
-//   return false;
-// }
+
+RECT GetSafeDesktopRect()
+{
+  RECT desktopRect;
+  HWND hwnd = GetDesktopWindow();
+  GetWindowRect(hwnd, &desktopRect);
+
+  return desktopRect;
+}
+std::string GetTextArgument(const flutter::MethodCall<> &method_call)
+{
+  std::string text;
+  const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+  if (arguments)
+  {
+    auto url_it = arguments->find(flutter::EncodableValue("text"));
+    if (url_it != arguments->end())
+    {
+      text = std::get<std::string>(url_it->second);
+    }
+  }
+  return text;
+}
+
+wstring string2wstring(string str)
+{
+  wstring result;
+  int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), static_cast<int>(str.size()), NULL, 0);
+  TCHAR *buffer = new TCHAR[len + 1];
+  MultiByteToWideChar(CP_ACP, 0, str.c_str(), static_cast<int>(str.size()), buffer, len);
+  buffer[len] = '\0';
+  result.append(buffer);
+  delete[] buffer;
+  return result;
+}
 
 bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::EncodableValue> &method_call)
 {
-  // const auto *plist = std::get_if<flutter::EncodableList>(method_call.arguments());
-  // if (IsString(&(*plist)[0]))
-  // {
-  //   // EncodableValue *value = fromString(toString(&(*plist)[0]).AnsiCharPtr);
-  //   // ResultValue.push_back(*value);
-  //   // delete value;
-  // }
+  std::string text = GetTextArgument(method_call);
+  if (!text.empty())
+  {
+    m_text = string2wstring(text);
+  }
   if (m_hWnd == NULL)
   {
     WNDCLASSA windowClass = {0};
@@ -178,22 +208,24 @@ bool FlutterStatusBarPlugin::ShowStatusBar(const flutter::MethodCall<flutter::En
 
     RegisterClassA(&windowClass);
 
-    RECT R = {0, 0, W, H};
-    int width = R.right - R.left;
-    int height = R.bottom - R.top;
+    RECT desktopRect = GetSafeDesktopRect();
+    RECT rect = {desktopRect.right - WIN_WIDTH, desktopRect.bottom - WIN_HEIGHT - WIN_BOTTOM, desktopRect.right, desktopRect.bottom - WIN_BOTTOM};
     // HMODULE hInstance = GetModuleHandle(NULL);
     m_hWnd = CreateWindowExW(
         WS_EX_TOPMOST | WS_EX_TRANSPARENT,
         L"flutter_status_bar_wnd",
         L"flutter_status_bar_wnd",
-        WS_POPUPWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        width, height,
+        WS_POPUPWINDOW, rect.left, rect.top,
+        rect.right - rect.left, rect.bottom - rect.top,
         0, 0,
         NULL, windowClass.hInstance);
 
     SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) & ~WS_EX_APPWINDOW | WS_EX_TOOLWINDOW);
     //SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED);
+    // COLORREF maskColor = RGB(111, 111, 111);
+    // SetLayeredWindowAttributes(m_hWnd, 0, 180, LWA_ALPHA);
+    // SetLayeredWindowAttributes(m_hWnd, maskColor, 255, 1);
+    // SetLayeredWindowAttributes(m_hWnd, 0, 20, LWA_ALPHA);
   }
   ShowWindow(m_hWnd, SW_SHOW);
   UpdateWindow(m_hWnd);
@@ -217,6 +249,15 @@ bool FlutterStatusBarPlugin::IsShown()
 
 bool FlutterStatusBarPlugin::SetStatusBarText(const flutter::MethodCall<flutter::EncodableValue> &method_call)
 {
+  if (m_hWnd != NULL)
+  {
+    std::string text = GetTextArgument(method_call);
+    if (!text.empty())
+    {
+      m_text = string2wstring(text);
+    }
+    UpdateWindow(m_hWnd);
+  }
   return true;
 }
 
