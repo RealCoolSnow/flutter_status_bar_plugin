@@ -121,26 +121,31 @@ namespace
   }
 } // namespace
 
-LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
+  COLORREF textColor, backgroundColor;
   switch (message)
   {
   case WM_CREATE:
   {
-    //CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 0, 30, 73, 20, window, NULL, NULL, NULL);
+    // CreateWindow(L"edit", NULL, WS_CHILD | WS_VISIBLE, 0, 0, WIN_WIDTH, WIN_HEIGHT, window, NULL, NULL, NULL);
     break;
   }
   case WM_PAINT:
   {
     PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(window, &ps);
-    TextOut(hdc, 0, 0, m_text.c_str(), static_cast<int>(m_text.size()));
-    EndPaint(window, &ps);
+    HDC hDC = BeginPaint(hwnd, &ps);
+    textColor = SetTextColor(hDC, RGB(200, 200, 50));
+    backgroundColor = SetBkColor(hDC, RGB(0, 0, 255));
+    TextOut(hDC, 0, 0, m_text.c_str(), static_cast<int>(m_text.size()));
+    SetTextColor(hDC, textColor);
+    SetBkColor(hDC, backgroundColor);
+    EndPaint(hwnd, &ps);
     break;
   }
   case WM_NCHITTEST:
   {
-    LRESULT hit = DefWindowProc(window, message, wparam, lparam);
+    LRESULT hit = DefWindowProc(hwnd, message, wparam, lparam);
     if (hit == HTCLIENT)
     {
       hit = HTCAPTION;
@@ -151,7 +156,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
     PostQuitMessage(0);
     break;
   default:
-    return DefWindowProcA(window, message, wparam, lparam);
+    return DefWindowProcA(hwnd, message, wparam, lparam);
   }
   return 0;
 }
@@ -255,10 +260,11 @@ bool FlutterStatusBarPlugin::SetStatusBarText(const flutter::MethodCall<flutter:
     if (!text.empty())
     {
       m_text = string2wstring(text);
+      UpdateWindow(m_hWnd);
+      return true;
     }
-    UpdateWindow(m_hWnd);
   }
-  return true;
+  return false;
 }
 
 void FlutterStatusBarPluginRegisterWithRegistrar(
